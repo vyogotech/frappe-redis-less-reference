@@ -1,0 +1,134 @@
+2026-05-26 00:07:48 - Starting MariaDB...
+2026-05-26 00:07:51 - MariaDB started (PID 4).
+2026-05-26 00:07:52 - Redis startup SKIPPED — running in Redis-less / in-memory cache mode.
+2026-05-26 00:07:52 - Injecting use_memory_cache=true into site configs...
+  Patched sites/dev.localhost/site_config.json
+2026-05-26 00:07:52 - Removing Redis URLs from common_site_config.json...
+  Patched sites/common_site_config.json
+2026-05-26 00:07:52 - Patching Procfile — removing worker, socketio, and schedule; disabling threading...
+2026-05-26 00:07:52 - Procfile after patch:
+
+
+web: bench serve --nothreading  --port 8000
+
+
+
+
+watch: bench watch
+
+
+
+
+2026-05-26 00:07:52 - Registering apps...
+2026-05-26 00:07:55 - All apps registered.
+2026-05-26 00:07:57 - Starting Frappe/ERPNext (Redis-less mode)...
+00:07:58 system  | web.1 started (pid=70)
+00:07:58 system  | watch.1 started (pid=71)
+00:07:59 watch.1 | Redis connection test failed, falling back to MemoryCacheWrapper
+00:07:59 web.1   | Redis connection test failed, falling back to MemoryCacheWrapper
+00:07:59 watch.1 | 
+00:07:59 web.1   | WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+00:07:59 web.1   |  * Running on all addresses (0.0.0.0)
+00:07:59 web.1   |  * Running on http://127.0.0.1:8000
+00:07:59 web.1   |  * Running on http://10.88.0.2:8000
+00:07:59 web.1   | Press CTRL+C to quit
+00:07:59 web.1   |  * Restarting with stat
+00:08:00 watch.1 | yarn run v1.22.22
+00:08:00 watch.1 | $ node esbuild --watch --live-reload
+00:08:00 web.1   | Redis connection test failed, falling back to MemoryCacheWrapper
+00:08:00 web.1   |  * Debugger is active!
+00:08:00 web.1   |  * Debugger PIN: 645-694-235
+00:08:01 watch.1 |  WARN  Cannot connect to redis_queue for open_in_editor events
+00:08:03 watch.1 | Browserslist: caniuse-lite is outdated. Please run:
+00:08:03 watch.1 |   npx update-browserslist-db@latest
+00:08:03 watch.1 |   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+00:08:12 watch.1 | Watching for changes...
+00:08:12 watch.1 |  WARN  Cannot connect to redis_cache to update assets_json
+00:08:12 watch.1 |  WARN  Cannot connect to redis_cache to update assets_json
+00:08:12 watch.1 |  WARN  Cannot connect to redis_cache to update assets_json
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET / HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/dist/css/website.bundle.LPUNRBIN.css HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/dist/css/login.bundle.3BXM2XD7.css HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/erpnext/dist/css/erpnext-web.bundle.NQ5DE23F.css HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /website_script.js HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/icons/lucide/icons.svg?v=1779754092.8320792 HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/icons/timeless/icons.svg?v=1779754092.8320792 HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/dist/js/frappe-web.bundle.K5YVFVH6.js HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/icons/espresso/icons.svg?v=1779754092.8320792 HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/erpnext/icons/pos-icons.svg?v=1779754092.8320792 HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/erpnext/images/erpnext-logo.svg HTTP/1.1" 200 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/css/fonts/inter/InterVariable.woff2 HTTP/1.1" 304 -
+00:11:29 web.1   | 10.88.0.2 - - [26/May/2026 00:11:29] "GET /assets/frappe/dist/js/file_uploader.bundle.2LKKXCH5.js HTTP/1.1" 200 -
+00:11:32 web.1   | 10.88.0.2 - - [26/May/2026 00:11:32] "POST /login HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /desk HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/css/desk.bundle.ZVIBLVJC.css HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/erpnext/dist/css/erpnext.bundle.OSUFPICX.css HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/billing.bundle.DXKLQYUH.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/icons/desktop_icons/alphabets.svg?v=1779754092.8320792 HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/css/report.bundle.TMXU72VF.css HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/libs.bundle.TCCLKT27.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/desk.bundle.UV4WL36V.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/list.bundle.U66Y3AG7.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/form.bundle.YUYJKIN7.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/controls.bundle.ID4LFK7O.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/report.bundle.4O6KY2HZ.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/erpnext/dist/js/erpnext.bundle.M72RI6VY.js HTTP/1.1" 200 -
+00:11:33 web.1   | 10.88.0.2 - - [26/May/2026 00:11:33] "GET /assets/frappe/dist/js/telemetry.bundle.DQEBDMFO.js HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/frappe/sounds/email.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/frappe/sounds/cancel.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/frappe/sounds/submit.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/frappe/sounds/click.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/frappe/sounds/delete.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/frappe/sounds/alert.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/frappe/sounds/error.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/erpnext/sounds/incoming-call.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/erpnext/sounds/numpad-touch.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/erpnext/sounds/call-disconnect.mp3 HTTP/1.1" 304 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "POST /api/method/frappe.core.doctype.session_default_settings.session_default_settings.get_session_default_values HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /assets/erpnext/js/setup_wizard.js?v=1779754294133 HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "POST /api/method/frappe.desk.page.setup_wizard.setup_wizard.load_languages HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "POST /api/method/frappe.desk.page.setup_wizard.setup_wizard.load_user_details HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /api/method/frappe.client.get_value?doctype=System%20Settings&fieldname=["country","timezone","currency","language"]&filters=System%20Settings&_=1779754293943 HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /api/method/frappe.client.get_value?doctype=User&fieldname=["full_name","email"]&filters={"name":["not%20in",["Administrator","Guest"]]}&_=1779754293944 HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "POST /api/method/frappe.geo.country_info.get_country_timezone_info HTTP/1.1" 200 -
+00:11:34 web.1   | 10.88.0.2 - - [26/May/2026 00:11:34] "GET /api/method/frappe.desk.form.load.getdoc?doctype=Currency&name=AUD&_=1779754293945 HTTP/1.1" 200 -
+00:11:54 web.1   | 10.88.0.2 - - [26/May/2026 00:11:54] "POST /api/method/erpnext.accounts.doctype.account.chart_of_accounts.chart_of_accounts.get_charts_for_country HTTP/1.1" 200 -
+00:19:45 web.1   | Updating Dashboard for frappe
+00:19:45 web.1   | Updating Dashboard for erpnext
+00:19:45 web.1   | 10.88.0.2 - - [26/May/2026 00:19:45] "POST /api/method/frappe.desk.page.setup_wizard.setup_wizard.setup_complete HTTP/1.1" 200 -
+00:19:46 web.1   | 10.88.0.2 - - [26/May/2026 00:19:46] "GET /desk/setup-wizard/0 HTTP/1.1" 200 -
+00:19:46 web.1   | 10.88.0.2 - - [26/May/2026 00:19:46] "POST /api/method/erpnext.accounts.doctype.account.chart_of_accounts.chart_of_accounts.get_charts_for_country HTTP/1.1" 200 -
+00:19:46 web.1   | 10.88.0.2 - - [26/May/2026 00:19:46] "POST /api/method/frappe.desk.page.setup_wizard.setup_wizard.setup_complete HTTP/1.1" 200 -
+00:19:47 web.1   | 10.88.0.2 - - [26/May/2026 00:19:47] "POST /api/method/frappe.desk.desk_page.getpage HTTP/1.1" 200 -
+00:19:47 web.1   | 10.88.0.2 - - [26/May/2026 00:19:47] "POST /api/method/frappe.core.doctype.session_default_settings.session_default_settings.get_session_default_values HTTP/1.1" 200 -
+00:19:47 web.1   | 10.88.0.2 - - [26/May/2026 00:19:47] "GET /desk HTTP/1.1" 200 -
+00:19:47 web.1   | 10.88.0.2 - - [26/May/2026 00:19:47] "POST /api/method/frappe.desk.page.setup_wizard.setup_wizard.load_languages HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "POST /api/method/frappe.desk.desk_page.getpage HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "POST /api/method/frappe.core.doctype.session_default_settings.session_default_settings.get_session_default_values HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /api/method/frappe.desk.doctype.notification_log.notification_log.get_notification_logs?limit=20&_=1779754787264 HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /api/method/frappe.desk.doctype.event.event.get_events?start=2026-05-26&end=2026-05-26&_=1779754787265 HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /api/method/frappe.desk.doctype.notification_log.notification_log.get_notification_logs?limit=20&_=1779754787266 HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /api/method/frappe.desk.doctype.event.event.get_events?start=2026-05-26&end=2026-05-26&_=1779754787267 HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/budget.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/invoicing.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/frappe/images/frappe-framework-logo.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/payments.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/organization.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/financial_reports.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/share_management.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/subscription.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/assets.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/buying.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/manufacturing.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/projects.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/quality.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/selling.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/stock.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/subcontracting.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/erpnext/icons/desktop_icons/solid/erpnext_settings.svg HTTP/1.1" 200 -
+00:19:52 web.1   | 10.88.0.2 - - [26/May/2026 00:19:52] "GET /assets/frappe/images/ui-states/notification-empty-state.svg HTTP/1.1" 200 -
+00:19:53 web.1   | 10.88.0.2 - - [26/May/2026 00:19:53] "GET /undefined HTTP/1.1" 404 -
+00:19:53 web.1   | 10.88.0.2 - - [26/May/2026 00:19:53] "GET /assets/erpnext/icons/desktop_icons/solid/accounts_setup.svg HTTP/1.1" 200 -
+00:19:53 web.1   | 10.88.0.2 - - [26/May/2026 00:19:53] "GET /assets/erpnext/icons/desktop_icons/solid/taxes.svg HTTP/1.1" 200 -
+00:19:53 web.1   | 10.88.0.2 - - [26/May/2026 00:19:53] "GET /assets/erpnext/icons/desktop_icons/solid/banking.svg HTTP/1.1" 200 -
+00:19:53 web.1   | 10.88.0.2 - - [26/May/2026 00:19:53] "GET /assets/frappe/images/ui-states/event-empty-state.svg HTTP/1.1" 200 -
