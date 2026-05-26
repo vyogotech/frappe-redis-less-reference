@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  erpnext-redis-less:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vyogo/erpnext:redis-less-test
+    container_name: erpnext-redis-less
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    environment:
+      MYSQL_ROOT_PASSWORD: "admin"
+      ENABLE_ASSETS_CACHE: "true"
+      AUTO_SETUP: "false"
+    volumes:
+      - erpnext_db:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8000/api/method/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  erpnext_db:
