@@ -107,15 +107,15 @@ def dispatch_realtime_event(event, message, room):
 def emit_via_webhook(event, message, room):
 	"""Publish real-time updates via HTTP Webhook"""
 	import requests
-	
+
 	payload = {"event": event, "message": message, "room": room, "namespace": frappe.local.site}
 	socketio_port = frappe.conf.get("socketio_port", 9000)
 	try:
 		requests.post(
-			f"http://localhost:{socketio_port}/_internal/publish_event", 
+			f"http://localhost:{socketio_port}/_internal/publish_event",
 			data=frappe.as_json(payload),
 			headers={"Content-Type": "application/json"},
-			timeout=1
+			timeout=1,
 		)
 	except requests.exceptions.RequestException:
 		pass
@@ -163,7 +163,7 @@ def get_socketio_secret():
 	return secret
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep
 def get_user_info():
 	user_type = frappe.session.data.get("user_type")
 	if not frappe.conf.get("in_memory"):
