@@ -1,0 +1,86 @@
+name: Build & Smoke Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-smoke:
+    name: Build image and smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: vyogo/erpnext:redis-less-ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start container
+        run: |
+          docker run -d \
+            --name erpnext-redis-less \
+            -p 8000:8000 \
+            -p 9000:9000 \
+            -e MYSQL_ROOT_PASSWORD=admin \
+            -e AUTO_SETUP=false \
+            --health-cmd "curl -fs http://localhost:8000/api/method/ping" \
+            --health-interval 15s \
+            --health-timeout 10s \
+            --health-retries 10 \
+            --health-start-period 90s \
+            vyogo/erpnext:redis-less-ci
+
+      - name: Wait for container to be healthy
+        run: |
+          echo "Waiting for container health..."
+          for i in $(seq 1 24); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' erpnext-redis-less 2>/dev/null || echo "starting")
+            echo "  [${i}/24] status=${STATUS}"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Container is healthy!"
+              break
+            fi
+            if [ "$STATUS" = "unhealthy" ]; then
+              echo "Container is unhealthy. Dumping logs:"
+              docker logs erpnext-redis-less
+              exit 1
+            fi
+            sleep 15
+          done
+          if [ "$STATUS" != "healthy" ]; then
+            echo "Timed out waiting for container. Dumping logs:"
+            docker logs erpnext-redis-less
+            exit 1
+          fi
+
+      - name: Smoke test — ping
+        run: |
+          echo "Checking /api/method/ping ..."
+          RESPONSE=$(curl -sf http://localhost:8000/api/method/ping)
+          echo "Response: $RESPONSE"
+          echo "$RESPONSE" | grep -q '"message":"pong"'
+          echo "✅ ping OK"
+
+      - name: Smoke test — socket.io port reachable
+        run: |
+          echo "Checking socket.io port 9000 is listening..."
+          curl -sf --max-time 5 http://localhost:9000/socket.io/?EIO=4&transport=polling | head -c 100 || true
+          echo "✅ socket.io port reachable"
+
+      - name: Dump container logs on failure
+        if: failure()
+        run: docker logs erpnext-redis-less
