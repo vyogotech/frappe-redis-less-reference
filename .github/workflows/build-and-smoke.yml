@@ -6,11 +6,19 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/erpnext-redis-less
+
 jobs:
   build-and-smoke:
     name: Build image and smoke test
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    permissions:
+      contents: read
+      packages: write   # needed to push to ghcr.io
 
     steps:
       - name: Checkout
@@ -19,13 +27,38 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build image
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            # main branch → :latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            # PRs → :pr-<number>
+            type=ref,event=pr
+            # short git SHA always
+            type=sha,prefix=sha-
+
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: false
+          # push on main (not on PRs from forks where GITHUB_TOKEN has no write)
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          # also load locally so the smoke test can use it
           load: true
-          tags: vyogo/erpnext:redis-less-ci
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-local
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -42,7 +75,7 @@ jobs:
             --health-timeout 10s \
             --health-retries 10 \
             --health-start-period 90s \
-            vyogo/erpnext:redis-less-ci
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-local
 
       - name: Wait for container to be healthy
         run: |
@@ -78,7 +111,7 @@ jobs:
       - name: Smoke test — socket.io port reachable
         run: |
           echo "Checking socket.io port 9000 is listening..."
-          curl -sf --max-time 5 http://localhost:9000/socket.io/?EIO=4&transport=polling | head -c 100 || true
+          curl -sf --max-time 5 "http://localhost:9000/socket.io/?EIO=4&transport=polling" | head -c 100 || true
           echo "✅ socket.io port reachable"
 
       - name: Dump container logs on failure
