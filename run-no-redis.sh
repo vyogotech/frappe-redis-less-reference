@@ -66,6 +66,7 @@ with open(path) as f:
     cfg = json.load(f)
 for key in ("redis_cache", "redis_queue", "redis_socketio"):
     cfg.pop(key, None)
+cfg["in_memory"] = 1
 with open(path, "w") as f:
     json.dump(cfg, f, indent=2)
 print(f"  Patched {path}")
@@ -73,14 +74,12 @@ PYEOF
 
 # ── Drop Redis-dependent processes from Procfile ─────────────────────────────
 # worker:   uses RQ (Redis queue) — crashes on missing Redis
-# socketio: Node.js hard-crashes on missing Redis
 # schedule: bench schedule fires enqueue() every minute; our sync fallback
 #            runs those jobs inline inside the scheduler's open DB connection,
 #            causing InnoDB lock-wait timeouts for all web requests.
 #            For developer onboarding, scheduled jobs are not needed.
-log "Patching Procfile — removing worker, socketio, and schedule; disabling threading..."
+log "Patching Procfile — removing worker and schedule; disabling threading..."
 sed -i '/^worker:/d' Procfile
-sed -i '/^socketio:/d' Procfile
 sed -i '/^schedule:/d' Procfile
 sed -i '/^redis/d' Procfile
 # Run web server single-threaded to prevent concurrent requests from racing on
