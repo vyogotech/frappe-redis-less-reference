@@ -12,14 +12,13 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/erpnext-redis-less
 
 jobs:
-  build-and-smoke:
-    name: Build image and smoke test
+  build-amd64:
+    name: Build image and smoke test - AMD64
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
     permissions:
       contents: read
-      packages: write   # needed to push to ghcr.io
+      packages: write
 
     steps:
       - name: Checkout
@@ -41,27 +40,24 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # main branch → :latest
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            # PRs → :pr-<number>
             type=ref,event=pr
-            # short git SHA always
             type=sha,prefix=sha-
 
-      - name: Build and push image
+      - name: Build and push AMD64 image
         uses: docker/build-push-action@v6
         with:
           context: .
-          # push on main (not on PRs from forks where GITHUB_TOKEN has no write)
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          # also load locally so the smoke test can use it
+          platforms: linux/amd64
+          # push intermediate suffix tag
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' }}
           load: true
           tags: |
-            ${{ steps.meta.outputs.tags }}
-            ghcr.io/${{ env.IMAGE_NAME }}:ci-local
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-local-amd64
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-sha-${{ github.sha }}-amd64
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=amd64
+          cache-to: type=gha,mode=max,scope=amd64
 
       - name: Start container
         run: |
@@ -76,7 +72,7 @@ jobs:
             --health-timeout 10s \
             --health-retries 10 \
             --health-start-period 90s \
-            ghcr.io/${{ env.IMAGE_NAME }}:ci-local
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-local-amd64
 
       - name: Wait for container to be healthy
         run: |
@@ -118,3 +114,153 @@ jobs:
       - name: Dump container logs on failure
         if: failure()
         run: docker logs erpnext-redis-less
+
+  build-arm64:
+    name: Build image and smoke test - ARM64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=ref,event=pr
+            type=sha,prefix=sha-
+
+      - name: Build and push ARM64 image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/arm64
+          # push intermediate suffix tag
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' }}
+          load: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-local-arm64
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-sha-${{ github.sha }}-arm64
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=arm64
+          cache-to: type=gha,mode=max,scope=arm64
+
+      - name: Start container
+        run: |
+          docker run -d \
+            --name erpnext-redis-less \
+            -p 8000:8000 \
+            -p 9000:9000 \
+            -e MYSQL_ROOT_PASSWORD=admin \
+            -e AUTO_SETUP=false \
+            --health-cmd "curl -fs http://localhost:8000/api/method/ping" \
+            --health-interval 15s \
+            --health-timeout 10s \
+            --health-retries 10 \
+            --health-start-period 90s \
+            ghcr.io/${{ env.IMAGE_NAME }}:ci-local-arm64
+
+      - name: Wait for container to be healthy
+        run: |
+          echo "Waiting for container health..."
+          for i in $(seq 1 24); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' erpnext-redis-less 2>/dev/null || echo "starting")
+            echo "  [${i}/24] status=${STATUS}"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Container is healthy!"
+              break
+            fi
+            if [ "$STATUS" = "unhealthy" ]; then
+              echo "Container is unhealthy. Dumping logs:"
+              docker logs erpnext-redis-less
+              exit 1
+            fi
+            sleep 15
+          done
+          if [ "$STATUS" != "healthy" ]; then
+            echo "Timed out waiting for container. Dumping logs:"
+            docker logs erpnext-redis-less
+            exit 1
+          fi
+
+      - name: Smoke test — ping
+        run: |
+          echo "Checking /api/method/ping ..."
+          RESPONSE=$(curl -sf http://localhost:8000/api/method/ping)
+          echo "Response: $RESPONSE"
+          echo "$RESPONSE" | grep -q '"message":"pong"'
+          echo "✅ ping OK"
+
+      - name: Smoke test — socket.io port reachable
+        run: |
+          echo "Checking socket.io port 9000 is listening..."
+          curl -sf --max-time 5 "http://localhost:9000/socket.io/?EIO=4&transport=polling" | head -c 100 || true
+          echo "✅ socket.io port reachable"
+
+      - name: Dump container logs on failure
+        if: failure()
+        run: docker logs erpnext-redis-less
+
+  create-manifests:
+    name: Create Multi-Arch Manifest
+    runs-on: ubuntu-latest
+    needs: [build-amd64, build-arm64]
+    # Only push manifests for main branch pushes (or workflow dispatch on main)
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-
+
+      - name: Create Multi-Arch Manifests
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled
+        run: |
+          # The base image name
+          IMAGE="ghcr.io/${{ env.IMAGE_NAME }}"
+          
+          # We need to map over all the tags generated by metadata-action
+          # e.g., latest, sha-1234567
+          
+          # For each tag in the meta action output
+          for TAG in $(echo "${{ steps.meta.outputs.tags }}" | tr '\n' ' '); do
+            if [ -n "$TAG" ]; then
+              echo "Creating manifest for $TAG"
+              docker buildx imagetools create -t "$TAG" \
+                "$IMAGE:ci-sha-${{ github.sha }}-amd64" \
+                "$IMAGE:ci-sha-${{ github.sha }}-arm64"
+            fi
+          done
