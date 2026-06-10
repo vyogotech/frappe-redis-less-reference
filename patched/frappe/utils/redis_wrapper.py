@@ -467,13 +467,13 @@ class MemoryCacheWrapper:
 
         return ret
 
-    def get_keys(self, key):
-        key = self.make_key(key + "*")
+    def get_keys(self, key, user=None, shared=False):
+        key = self.make_key(key + "*", user=user, shared=shared)
         pattern = str(key).replace("|", r"\|").replace("*", ".*")
         return [k for k in self.cache.keys() if re.match(pattern, str(k))]
 
-    def delete_keys(self, key):
-        self.delete_value(self.get_keys(key), make_keys=False)
+    def delete_keys(self, key, user=None, shared=False):
+        self.delete_value(self.get_keys(key, user=user, shared=shared), make_keys=False)
 
     def delete_key(self, *args, **kwargs):
         self.delete_value(*args, **kwargs)

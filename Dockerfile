@@ -16,6 +16,10 @@ COPY patched/realtime/index.js \
      /home/frappe/frappe-bench/apps/frappe/realtime/index.js
 COPY patched/realtime/middlewares/authenticate.js \
      /home/frappe/frappe-bench/apps/frappe/realtime/middlewares/authenticate.js
+COPY patched/socketio.js \
+     /home/frappe/frappe-bench/apps/frappe/socketio.js
+COPY patched/realtime/utils.js \
+     /home/frappe/frappe-bench/apps/frappe/realtime/utils.js
 
 COPY run-no-redis.sh /usr/libexec/s2i/run
 RUN chmod +x /usr/libexec/s2i/run && \
@@ -25,6 +29,8 @@ RUN chmod +x /usr/libexec/s2i/run && \
                  /home/frappe/frappe-bench/apps/frappe/frappe/utils/scheduler.py \
                  /home/frappe/frappe-bench/apps/frappe/frappe/realtime.py \
                  /home/frappe/frappe-bench/apps/frappe/realtime/index.js \
-                 /home/frappe/frappe-bench/apps/frappe/realtime/middlewares/authenticate.js
+                 /home/frappe/frappe-bench/apps/frappe/realtime/middlewares/authenticate.js \
+                 /home/frappe/frappe-bench/apps/frappe/socketio.js \
+                 /home/frappe/frappe-bench/apps/frappe/realtime/utils.js
 
 USER 1001
